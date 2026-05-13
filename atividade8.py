@@ -1,17 +1,14 @@
-# ==================================
+# =========================
 # SISTEMA DE MERCADO
-# ==================================
+# =========================
 
-# Lista onde os produtos serão guardados
 produtos = []
-
-# Lista do histórico de vendas
 historico = []
 
 
-# ==================================
-# FUNÇÃO DE LOGIN
-# ==================================
+# =========================
+# LOGIN
+# =========================
 
 def login():
 
@@ -22,8 +19,8 @@ def login():
 
     while tentativas < 3:
 
-        usuario = input("Digite o usuário: ")
-        senha = input("Digite a senha: ")
+        usuario = input("Usuário: ")
+        senha = input("Senha: ")
 
         if usuario == usuario_correto and senha == senha_correta:
             print("Login realizado com sucesso!")
@@ -31,44 +28,40 @@ def login():
 
         else:
             tentativas += 1
-            print("Usuário ou senha incorretos.")
+            print("Login incorreto.")
 
     print("Sistema bloqueado.")
     return False
 
 
-# ==================================
+# =========================
 # CADASTRAR PRODUTO
-# ==================================
+# =========================
 
 def cadastrar_produto():
 
     codigo = input("Código do produto: ")
 
-    # Verifica se o código já existe
+    # Verifica código repetido
     for produto in produtos:
-
         if produto["codigo"] == codigo:
-            print("Esse código já existe.")
+            print("Código já cadastrado.")
             return
 
     nome = input("Nome do produto: ")
 
-    preco = float(input("Preço do produto: "))
+    preco = float(input("Preço: "))
 
-    # Não permite preço negativo
     if preco < 0:
         print("Preço inválido.")
         return
 
-    estoque = int(input("Quantidade em estoque: "))
+    estoque = int(input("Estoque: "))
 
-    # Não permite estoque negativo
     if estoque < 0:
         print("Estoque inválido.")
         return
 
-    # Cria o produto
     produto = {
         "codigo": codigo,
         "nome": nome,
@@ -76,87 +69,88 @@ def cadastrar_produto():
         "estoque": estoque
     }
 
-    # Adiciona na lista
     produtos.append(produto)
 
     print("Produto cadastrado com sucesso!")
 
 
-# ==================================
+# =========================
 # LISTAR PRODUTOS
-# ==================================
+# =========================
 
 def listar_produtos():
 
-    # Verifica se existem produtos
     if len(produtos) == 0:
         print("Nenhum produto cadastrado.")
         return
 
-    print("\n===== PRODUTOS =====")
+    print("\n=== PRODUTOS ===")
 
-    # Mostra os produtos
     for produto in produtos:
 
-        print("--------------------")
+        print("-------------------")
         print("Código:", produto["codigo"])
         print("Nome:", produto["nome"])
         print("Preço: R$", produto["preco"])
         print("Estoque:", produto["estoque"])
 
 
-# ==================================
+# =========================
 # REALIZAR VENDA
-# ==================================
+# =========================
 
 def realizar_venda():
 
     codigo = input("Digite o código do produto: ")
 
-    # Procura o produto
     for produto in produtos:
 
         if produto["codigo"] == codigo:
 
-            quantidade = int(input("Quantidade da venda: "))
+            quantidade = int(input("Quantidade: "))
 
-            # Verifica estoque
+            if quantidade <= 0:
+                print("Quantidade inválida.")
+                return
+
             if quantidade > produto["estoque"]:
                 print("Estoque insuficiente.")
                 return
 
-            # Calcula total
             total = quantidade * produto["preco"]
 
-            # Diminui estoque
             produto["estoque"] -= quantidade
 
-            # Guarda no histórico
+            # Histórico
             historico.append(produto["nome"])
 
-            print("\n===== CUPOM FISCAL =====")
+            print("\n=== CUPOM FISCAL ===")
             print("Produto:", produto["nome"])
             print("Quantidade:", quantidade)
-            print("Valor total: R$", total)
+            print("Total: R$", total)
 
             return
 
     print("Produto não encontrado.")
 
 
-# ==================================
+# =========================
 # REPOR ESTOQUE
-# ==================================
+# =========================
 
 def repor_estoque():
 
-    codigo = input("Digite o código do produto: ")
+    codigo = input("Código do produto: ")
 
     for produto in produtos:
 
         if produto["codigo"] == codigo:
 
-            quantidade = int(input("Quantidade para adicionar: "))
+            quantidade = int(input("Quantidade para repor: "))
+
+            if quantidade <= 0:
+                print("Quantidade inválida.")
+                return
 
             produto["estoque"] += quantidade
 
@@ -166,9 +160,9 @@ def repor_estoque():
     print("Produto não encontrado.")
 
 
-# ==================================
+# =========================
 # RELATÓRIO
-# ==================================
+# =========================
 
 def relatorio():
 
@@ -176,45 +170,34 @@ def relatorio():
         print("Nenhum produto cadastrado.")
         return
 
-    produto_mais_caro = produtos[0]
-    produto_maior_estoque = produtos[0]
+    mais_caro = produtos[0]
+    maior_estoque = produtos[0]
 
     valor_total = 0
     quantidade_total = 0
 
-    # Percorre os produtos
     for produto in produtos:
 
-        # Produto mais caro
-        if produto["preco"] > produto_mais_caro["preco"]:
-            produto_mais_caro = produto
+        if produto["preco"] > mais_caro["preco"]:
+            mais_caro = produto
 
-        # Produto com maior estoque
-        if produto["estoque"] > produto_maior_estoque["estoque"]:
-            produto_maior_estoque = produto
+        if produto["estoque"] > maior_estoque["estoque"]:
+            maior_estoque = produto
 
-        # Soma valores
         valor_total += produto["preco"] * produto["estoque"]
-
-        # Soma quantidade
         quantidade_total += produto["estoque"]
 
-    print("\n===== RELATÓRIO =====")
+    print("\n=== RELATÓRIO ===")
 
-    print("Produto mais caro:", produto_mais_caro["nome"])
-
-    print("Produto com maior estoque:",
-          produto_maior_estoque["nome"])
-
+    print("Produto mais caro:", mais_caro["nome"])
+    print("Produto com maior estoque:", maior_estoque["nome"])
     print("Valor total do estoque: R$", valor_total)
-
-    print("Quantidade total de produtos:",
-          quantidade_total)
+    print("Quantidade total de produtos:", quantidade_total)
 
 
-# ==================================
+# =========================
 # HISTÓRICO DE VENDAS
-# ==================================
+# =========================
 
 def mostrar_historico():
 
@@ -222,15 +205,15 @@ def mostrar_historico():
         print("Nenhuma venda realizada.")
         return
 
-    print("\n===== HISTÓRICO =====")
+    print("\n=== HISTÓRICO DE VENDAS ===")
 
     for item in historico:
         print(item)
 
 
-# ==================================
+# =========================
 # MENU PRINCIPAL
-# ==================================
+# =========================
 
 if login():
 
@@ -250,35 +233,27 @@ if login():
 
         opcao = input("Escolha uma opção: ")
 
-        # Cadastro
         if opcao == "1":
             cadastrar_produto()
 
-        # Listar
         elif opcao == "2":
             listar_produtos()
 
-        # Venda
         elif opcao == "3":
             realizar_venda()
 
-        # Repor estoque
         elif opcao == "4":
             repor_estoque()
 
-        # Relatório
         elif opcao == "5":
             relatorio()
 
-        # Histórico
         elif opcao == "6":
             mostrar_historico()
 
-        # Sair
         elif opcao == "7":
             print("Sistema encerrado.")
             break
 
-        # Opção inválida
         else:
             print("Opção inválida.")
